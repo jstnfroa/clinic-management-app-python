@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f0f8ff;
+    background-image: url('staffbg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.parent {
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    grid-column-gap: 23px;
+    grid-row-gap: 20px;
+    width: 90%;
+    height: 90vh;
+}
+
+.div1, .div2, .div3, .div4 {
+    background-color: #ffffff;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #154975;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.div5, .div6, .div7, .div8 {
+    background-color: #ffffff;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 25px;
+    font-weight: bold;
+    color: #154975;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.div1 { grid-area: 1 / 1 / 3 / 2; }
+.div2 { grid-area: 3 / 1 / 5 / 2; }
+.div3 { grid-area: 5 / 1 / 7 / 2; }
+.div4 { grid-area: 7 / 1 / 9 / 2; }
+.div5 { grid-area: 1 / 2 / 5 / 4; }
+.div6 { grid-area: 1 / 4 / 5 / 6; }
+.div7 { grid-area: 5 / 2 / 9 / 4; }
+.div8 { grid-area: 5 / 4 / 9 / 6; }
+
+.highlight {
+    color: #00a1ff;
+}
+
+/* Media Queries for Responsiveness */
+
+/* For smaller screens (tablets and mobile devices) */
+@media (max-width: 768px) {
+    .parent {
+        grid-template-columns: 1fr 1fr; /* 2 columns */
+        grid-template-rows: repeat(8, 1fr); /* Keep 8 rows */
+    }
+
+    .div1, .div2, .div3, .div4, .div5, .div6, .div7, .div8 {
+        font-size: 20px; /* Adjust font size for smaller screens */
+        padding: 10px; /* Add padding for better spacing */
+    }
+
+    header {
+        flex-direction: column; /* Stack header items vertically on smaller screens */
+        align-items: flex-start;
+    }
+
+    nav {
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    nav a {
+        display: block;
+        margin: 5px 0;
+    }
+}
+
+/* For mobile screens */
+@media (max-width: 480px) {
+    .parent {
+        grid-template-columns: 1fr; /* 1 column */
+        grid-template-rows: repeat(8, 1fr);
+    }
+
+    .div1, .div2, .div3, .div4, .div5, .div6, .div7, .div8 {
+        font-size: 16px; /* Adjust font size further for mobile */
+        padding: 8px; /* Reduce padding for smaller screens */
+    }
+
+    header h1 {
+        font-size: 20px; /* Adjust header size */
+    }
+
+    nav a {
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+}

@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthBridge Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/staff/staffqueuing.css' %}">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/icon type">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'> <!-- Import box icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% include 'includes/header.html' %}
+    {% block content %}{% endblock %}
+
+    <div class="parent">
+        <div class="div1">
+            <h2>Choose Transaction Queue</h2>
+        </div>
+        <button class="div2" onclick="showQueueInfo('Consultation', 'Medical, Dental')">
+            <img class="div-img" src="CONSULTATION.PNG" alt="Consultation Icon">
+            <div class="text">Consultations <br><span class="highlight1">Medical, Dental</span></div>
+        </button>
+        <button class="div3" onclick="showQueueInfo('Certificate', 'Absence, Employment, OJT, OSRA')">
+            <img class="div-img" src="CERTIFICATE.PNG" alt="Certificate Icon">
+            <div class="text">Certificates <br><span class="highlight1">Absence, Employment, <br>OJT, OSRA</span></div>
+        </button>
+        <button class="div4" onclick="showQueueInfo('Others', 'General Services')">
+            <img class="div-img" src="OTHERS.PNG" alt="Others Icon">
+            <div class="text">Others</div>
+        </button>
+    </div>
+
+    <div id="queueModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <p id="queueName"></p>
+            <p id="queueDetails"></p>
+            <!-- <p1><strong>Queue No."number here"</strong> <span id="queueNumber"></span></p1> -->
+    
+            <!-- Grid Layout Inside Modal -->
+            <div class="parent1">
+                <div class="div1p">
+                    <div class="total-served-number">123</div> <!-- This will display the number -->
+                    Total Served Patients
+                </div>                
+                <div class="div2p">
+                    <div class="total-served-number">123</div> <!-- This will display the number -->
+                    Total Patients Waiting
+                </div> 
+                <div class="div3p">
+                    <div class="qcnbs">123</div>  <!-- This will show the queue number -->
+                    <span>Queue Number Currently Being Served</span>  <!-- This will be placed at the bottom -->
+                </div>                 
+                <div class="div4p">
+                    <div class="div1c">
+                        <p><strong>Queue No. <span id="queueNumber">123</span></strong></p>
+                    </div>
+                    <div class="div2c">
+                        <p><strong>Full Name:</strong> John Doe</p>
+                    </div>
+                    <div class="div3c">
+                        <p><strong>Email:</strong> johndoe@example.com</p>
+                    </div>
+                    <div class="div4c">
+                        <p><strong>Student/Employee Number:</strong> 123456789</p>
+                    </div>
+                    <div class="div5c">
+                        <p><strong>Age:</strong> 25</p>
+                    </div>
+                    <div class="div6c">
+                        <p><strong>Sex:</strong> Male</p>
+                    </div>
+                    <div class="div7c">
+                        <p><strong>Address:</strong> 123 Main St, City</p>
+                    </div>
+                    <div class="div8c">
+                        <p><strong>College/Office:</strong> College of Engineering</p>
+                    </div>
+                    <div class="div9c">
+                        <p><strong>Course & Year/Designation:</strong> BS Computer Science, 3rd Year</p>
+                    </div>
+                    <div class="div10c">
+                        <p><strong>Blood Type:</strong> O+</p>
+                        <p><strong>Allergies:</strong> None</p>
+                    </div>
+                </div>
+                
+                <div class="div5p">
+                    <button class="action-button" onclick="alert('Call Next Transaction')">Call Next Transaction</button>
+                </div>
+                <div class="div7p">
+                    <button class="action-button" onclick="alert('Complete Transaction')">Complete Transaction</button>
+                </div>
+                <div class="div6p">
+                    <button class="action-button" onclick="alert('Skip Patient')">Skip Patient</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showQueueInfo(queueName, queueDetails) {
+            // Set the content of the modal
+       
+    
+            // Display the modal
+            document.getElementById('queueModal').style.display = 'block';
+        }
+    
+        function closeModal() {
+            // Close the modal
+            document.getElementById('queueModal').style.display = 'none';
+        }
+    
+        // Remove the window click event to stop closing modal on click outside
+        // window.onclick = function(event) {
+        //     if (event.target == document.getElementById('queueModal')) {
+        //         closeModal();
+        //     }
+        // }
+    </script>
+
+</body>
+</html>

@@ -1,7 +1,6 @@
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 #Patient Model
 class Patient(models.Model):
     BLOOD_TYPE_CHOICES = [
@@ -102,6 +101,11 @@ class Staff(models.Model):
     password = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=15)
 
+    def save(self, *args, **kwargs):
+        if self.password:  # Hash the password only if it's not already hashed
+            self.password = make_password(self.password)
+        super(Staff, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -112,8 +116,14 @@ class Admin(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
 
+    def save(self, *args, **kwargs):
+        if self.password:  # Hash the password only if it's not already hashed
+            self.password = make_password(self.password)
+        super(Admin, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.email
+
 
 #Appointment Model
 class Appointment(models.Model):
@@ -145,7 +155,7 @@ class Appointment(models.Model):
             ('Appointment', 'Appointment'),
             ('Walk-in', 'Walkin')
         ]
-    )#Save depends on what container to be picked in patient_queue view.
+    )#Save depends on what container to be picked in patient_queue view. 
     queue_type = models.CharField(
         max_length=20,
         choices=[
@@ -162,7 +172,7 @@ class Appointment(models.Model):
         ]
     ) #Save as 'In Progress' for now when the Appointment is created.
 
-    queue_category = models.CharField(
+    certificate_category = models.CharField(
         max_length=40, null=True,
         choices = [
             ('Absence Certificate', 'Absence Certificate'),
@@ -172,8 +182,16 @@ class Appointment(models.Model):
         ] #Save depends on what container to be picked in patient_queue view.
     )
 
+    queue_category = models.CharField(
+        max_length=20, null=True,
+        choices=[
+            ('Medical', 'Medical'),
+            ('Dental', 'Dental'),
+        ]
+    )  #Save depends on what container to be picked in patient_queue view.
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient}"
+
 
 # Medical Record Model
 class MedicalRecord(models.Model):

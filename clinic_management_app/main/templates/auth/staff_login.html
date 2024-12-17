@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthBridge Login</title>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/icon type">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'> <!-- Import box icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="login-container">
+            <img src="{% static 'img/logo.png' %}" alt="HealthBridge Logo" style="width: 150px;">
+            <h2>STAFF LOGIN</h2>
+            <form class="form-section" method="POST" action="{% url 'staff_login' %}">
+                {% csrf_token %}
+                
+                <!-- Email Address Field -->
+                <label for="email">Email Address</label><br>
+                <input type="email" id="email" name="email" placeholder="ex: johndoe@gmail.com" required><br>
+                
+                <!-- Password Field -->
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password" required><br>
+                
+                <!-- Submit Button -->
+                <button type="submit">SIGN IN</button>
+            </form>
+
+            <div class="goto-admin">
+                <a href="{% url 'admin_login' %}" style="text-decoration: none;" >Login as Admin</a>
+            </div>
+        </div>
+        <div class="welcome-section">
+            <h1>Welcome back to </h1>
+            <h2>Health<span class="highlight">Bridge</span>!</h2>
+            <p>Your health, our priority. Please log in to manage the clinic system.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const emailField = document.getElementById('email');
+        const passwordField = document.getElementById('password');
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+    
+            const email = emailField.value.trim();
+            const password = passwordField.value.trim();
+    
+            // Basic client-side validation
+            if (!email || !password) {
+                alert("Please fill in both email and password fields.");
+                return;
+            }
+    
+            // Optionally, show a loading indicator
+            const button = form.querySelector('button');
+            button.innerHTML = 'Logging in...';
+            button.disabled = true;
+    
+            // Perform an AJAX request to submit the form data
+            fetch("{% url 'staff_login' %}", {
+                method: 'POST',
+                body: new FormData(form), // Automatically includes the CSRF token
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url; // Redirect to dashboard if successful
+                } else {
+                    alert(data.error_message); // Show error message
+                }
+            })
+            .catch(error => {
+                console.error("Error logging in:", error);
+                alert("An error occurred. Please try again.");
+            })
+            .finally(() => {
+                button.innerHTML = 'SIGN IN';
+                button.disabled = false;
+            });
+        });
+    });
+    
+</script>

@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Medical Record</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/staff/patientrecord.css' %}">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'> <!-- Import box icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/icon type">
+    <link rel="stylesheet" href="patientrecord.css">
+    <style>
+        /* Popup Overlay Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .parent {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            grid-column-gap: 20px;
+            grid-row-gap: 20px;
+        }
+
+        .div1 { grid-area: 1 / 2 / 2 / 6; }
+        .div2 { grid-area: 2 / 2 / 3 / 4; }
+        .div3 { grid-area: 3 / 2 / 4 / 4; }
+        .div4 { grid-area: 4 / 2 / 5 / 4; }
+        .div5 { grid-area: 2 / 4 / 3 / 6; }
+        .div6 { grid-area: 3 / 4 / 4 / 6; }
+        .div7 { grid-area: 4 / 4 / 5 / 6; }
+        .div8 { grid-area: 5 / 2 / 6 / 6; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #2463A9;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2463A9;
+        }
+    </style>
+</head>
+<body>
+    {% include 'includes/header.html' %}
+    {% block content %}{% endblock %}
+
+    <div class="parent">
+        <div class="div1">
+            <h2>ADD MEDICAL RECORD</h2>
+            <form id="main-form">
+                <div class="form-group">
+                    <label for="transaction-type">Transaction Type</label>
+                    <select id="transaction-type" name="transaction-type" required>
+                        <option value="">Select Transaction Type</option>
+                        <option value="consultation">Consultation</option>
+                        <option value="certification">Certification</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="attending-staff">Attending Staff</label>
+                    <input type="text" id="attending-staff" name="attending-staff" placeholder="Enter staff name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date-time">Date & Time</label>
+                    <input type="datetime-local" id="date-time" name="date-time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="details">Details of Transaction</label>
+                    <textarea id="details" name="details" rows="4" placeholder="Enter transaction details" required></textarea>
+                </div>
+
+                <button type="submit" class="btn">PROCEED</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup-overlay hidden" id="popup">
+        <div class="popup-content parent">
+            <div class="div1">
+                <h2>Consultation Details</h2>
+            </div>
+            <div class="div2">
+                <label for="height">Height</label>
+                <input type="text" id="height" placeholder="Enter height">
+            </div>
+            <div class="div3">
+                <label for="heart-rate">Heart Rate</label>
+                <input type="text" id="heart-rate" placeholder="Enter heart rate">
+            </div>
+            <div class="div4">
+                <label for="temperature">Temperature</label>
+                <input type="text" id="temperature" placeholder="Enter temperature">
+            </div>
+            <div class="div5">
+                <label for="weight">Weight</label>
+                <input type="text" id="weight" placeholder="Enter weight">
+            </div>
+            <div class="div6">
+                <label for="respiratory-rate">Respiratory Rate</label>
+                <input type="text" id="respiratory-rate" placeholder="Enter respiratory rate">
+            </div>
+            <div class="div7">
+                <label for="blood-pressure">Blood Pressure</label>
+                <input type="text" id="blood-pressure" placeholder="Enter blood pressure">
+                <div class="div9">
+                    <label for="pain-scale">Pain Scale</label>
+                    <input type="text" id="pain-scale" placeholder="Enter Pain Scale">
+                </div>
+                <div class="div10">
+                    <label for="diagnosis">Initial Diagnosis (Select Applicable)</label>
+                    <select id="diagnosis">
+                        <option value="A2024">A2024</option>
+                        <option value="ABDL DCFT">ABDL DCFT (Abdominal Discomfort)</option>
+                        <option value="Acute Asthma">Acute Asthma</option>
+                        <option value="AGE">AGE (Acute Gastroenteritis)</option>
+                        <option value="Allergy">Allergy</option>
+                        <option value="Animal Bite">Animal Bite</option>
+                        <option value="APE">APE (Annual Physical Examination)</option>
+                        <option value="ATP">ATP (Acute Tonsilo-Pharyngitis)</option>
+                        <option value="Burn">Burn</option>
+                        <option value="Cardiac Related Disorder">Cardiac Related Disorder</option>
+                        <option value="Dental Disorder">Dental Disorder</option>
+                        <option value="Dysmenorrhea">Dysmenorrhea</option>
+                        <option value="Ear Disorder">Ear Disorder</option>
+                        <option value="Epistaxis">Epistaxis</option>
+                        <option value="Eye Disorder">Eye Disorder</option>
+                        <option value="GERD">GERD (Gastro-Esophageal Reflux Disease)</option>
+                        <option value="SRI">SRI (Sports Related Injury)</option>
+                        <option value="SVI">SVI (Systemic Viral Infection)</option>
+                        <option value="TO Rule-out">TO Rule-out</option>
+                        <option value="Trauma">Trauma</option>
+                        <option value="URTI">URTI (Upper Respiratory Tract Infection)</option>
+                    </select>
+                </div>                
+            <div class="div8">
+                <button id="submit-popup" class="btn">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.btn').addEventListener('click', function (event) {
+            event.preventDefault();
+            const transactionType = document.getElementById('transaction-type').value;
+            if (transactionType === 'consultation') {
+                document.getElementById('popup').classList.remove('hidden');
+            } else {
+                alert('Please select Consultation to proceed.');
+            }
+        });
+
+        document.getElementById('submit-popup').addEventListener('click', function () {
+            alert('Consultation details submitted successfully!');
+            document.getElementById('popup').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthBridge Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/staff/addpatient.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/icon type">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'> <!-- Import box icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    {% include 'includes/admin_header.html' %}
+    {% block content %}{% endblock %}
+
+    <div class="parent">
+        <!-- Search Section -->
+        <div class="div2">
+            <div class="search-container">
+                <input type="text" placeholder="Search">
+                <button><i class="fa fa-search"></i> Search</button>
+                <button><i class="fa fa-filter"></i> Filter</button>
+            </div>
+        </div>
+
+        <!-- Add Patient Button -->
+        <div class="div1">
+            <button class="add-patient-btn" id="openModalBtn">Add Patient</button>
+        </div>
+
+        <!-- Placeholder Div -->
+        <div class="div3"></div>
+
+        <!-- Patient Records -->
+        <div class="div4">
+            <div class="patient-card">
+                <div class="info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <div>
+                        <strong>Cruz, Lou Alyssa B.</strong>
+                        <div>Student</div>
+                    </div>
+                </div>
+                <div class="patient-actions">
+                    <i class="fa fa-plus-circle"></i>
+                    <i class="fa fa-eye"></i>
+                    <i class="fa fa-edit"></i>
+                    <i class="fa fa-trash"></i>
+                </div>
+            </div>
+            <!-- Repeat more patient cards as needed -->
+        </div>
+    </div>
+
+    <!-- Modal for Adding Patient -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModalBtn">&times;</span>
+            <h2>Add Patient</h2>
+            <form class="form-container">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+    
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+    
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+    
+                <label for="fullname">Full Name:</label>
+                <input type="text" id="fullname" name="fullname" required>
+    
+                <label for="student-emp-no">Student/Employee No.:</label>
+                <input type="text" id="student-emp-no" name="student-emp-no" required>
+    
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+    
+                <label for="lot-no">Lot No.:</label>
+                <input type="text" id="lot-no" name="lot-no" required>
+    
+                <label for="barangay">Barangay:</label>
+                <input type="text" id="barangay" name="barangay" required>
+    
+                <label for="street">Street:</label>
+                <input type="text" id="street" name="street" required>
+    
+                <label for="city-province">City/Province:</label>
+                <input type="text" id="city-province" name="city-province" required>
+    
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+    
+                <label for="sex">Sex:</label>
+                <select id="sex" name="sex" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+    
+                <label for="college-office">College/Office:</label>
+                <input type="text" id="college-office" name="college-office" required>
+    
+                <label for="course-year-designation">Course & Year/Designation:</label>
+                <input type="text" id="course-year-designation" name="course-year-designation" required>
+    
+                <label for="emergency-contact">Emergency Contact:</label>
+                <input type="text" id="emergency-contact" name="emergency-contact" required>
+    
+                <label for="blood-type">Blood Type:</label>
+                <input type="text" id="blood-type" name="blood-type" required>
+    
+                <label for="allergies">Allergies:</label>
+                <input type="text" id="allergies" name="allergies">
+    
+                <label for="priority">Priority:</label>
+                <select id="priority" name="priority" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+    
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const openModalBtn = document.getElementById("openModalBtn");
+        const modal = document.getElementById("patientModal");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+
+        openModalBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        closeModalBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
