@@ -1,2 +1,2 @@
 # clinic-management-app-python
-# This is a Clinic Managmnt Application for our Python Project
+# This is a Clinic Management Application for our Python Project
