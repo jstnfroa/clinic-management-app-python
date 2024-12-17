@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthBridge Login</title>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <div class="login-container">
+            <img src="{% static 'img/logo.png' %}" alt="HealthBridge Logo" style="width: 150px;">
+            <h2>LOGIN</h2>
+            <form class="form-section" method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <label for="username">Username</label><br>
+                <input type="text" id="username" name="username"><br>
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password"><br>
+                <button type="submit">SIGN IN</button>
+            </form>
+        </div>
+        <div class="welcome-section">
+            <h1>Welcome back to </h1>
+            <h2>Health<span class="highlight">Bridge</span>!</h2>
+            <p>Your health, our priority. Please log in to manage the clinic system.</p>
+        </div>
+    </div>
+</body>
+</html>
