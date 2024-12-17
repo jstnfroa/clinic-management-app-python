@@ -14,17 +14,8 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <h1>Health<span class="highlight">Bridge</span></h1>
-        <nav>
-            <a href="staffdashboard.html">Dashboard</a>
-            <a href="staffqueuing.html">Queueing</a>
-            <a href="patientrecord.html">Patient Record</a>
-            <a href="addpatient.html">Add Patient</a>
-            <a href="#">Profile</a>
-            <a href="#">Logout</a>
-        </nav>
-    </header>
+    {% include 'includes/staff_header.html' %}
+    {% block content %}{% endblock %}
 
     <div class="parent">
         <!-- Search Section -->

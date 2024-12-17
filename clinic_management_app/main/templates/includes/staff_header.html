@@ -1,11 +1,12 @@
+{% load static %}
 <header>
     <h1>Health<span class="highlight">Bridge</span></h1>
     <nav>
-        <a href="staffdashboard.html"><i class='bx bxs-dashboard icon'></i> Dashboard</a>
-        <a href="staffqueuing.html"><i class='bx bx-list-ul'></i> Queueing</a>
-        <a href="patientrecord.html"><i class='bx bx-plus-medical' ></i> Patient Record</a>
-        <a href="addpatient.html"><i class='bx bxs-bed' ></i> Add Patient</a>
-        <a href="#"><i class='bx bxs-user' ></i> Profile</a>
-        <a href="#"><i class='bx bxs-log-out icon'></i> Logout</a>
+        <a href="{% url 'staff_dashboard' %}"><i class='bx bxs-dashboard icon'></i> Dashboard</a>
+        <a href="{% url 'staff_queuing' %}"><i class='bx bx-list-ul'></i> Queueing</a>
+        <a href="{% url 'staff_patient_record' %}"><i class='bx bx-plus-medical' ></i> Patient Record</a>
+        <a href="{% url 'staff_add_patient' %}"><i class='bx bxs-bed' ></i> Add Patient</a>
+        <a href="{% url 'staff_profile' %}"><i class='bx bxs-user' ></i> Profile</a>
+        <a href="{% url 'logout_staff' %}"><i class='bx bxs-log-out icon'></i> Logout</a>
     </nav>
 </header>
