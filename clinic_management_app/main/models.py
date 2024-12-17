@@ -174,3 +174,18 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient}"
+
+# Medical Record Model
+class MedicalRecord(models.Model):
+    record_id = models.AutoField(primary_key=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    date_of_diagnosis = models.DateField()
+    initial_diagnosis = models.TextField()
+    attending_staff = models.CharField(max_length=100)
+    transaction_type = models.CharField(max_length=50)
+    assessment = models.TextField()
+    prescription = models.TextField()
+
+    def __str__(self):
+        return f"Record {self.record_id} - {self.patient}"
