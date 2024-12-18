@@ -115,6 +115,10 @@ class Admin(models.Model):
     admin_id = models.AutoField(primary_key=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
+    contact_number = models.CharField(max_length=15, blank=True, null=True)
+    full_name = models.CharField(max_length=255, blank=True, null=True)
+    profile_image = models.ImageField(upload_to='admin_profile_pics/', blank=True, null=True)
+    role = models.CharField(max_length=50, default='Super Admin')
 
     def save(self, *args, **kwargs):
         if self.password:  # Hash the password only if it's not already hashed

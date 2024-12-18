@@ -1,9 +1,9 @@
 <header>
     <h1>Health<span class="highlight">Bridge</span></h1>
     <nav>
-        <a href="staffdashboard.html"><i class='bx bxs-dashboard icon'></i> Dashboard</a>
-        <a href="staffqueuing.html"><i class='bx bxs-edit' ></i> User Management</a>
-        <a href="#"><i class='bx bxs-user'></i> Profile</a>
-        <a href="#"><i class='bx bxs-log-out icon'></i> Logout</a>
+        <a href="{% url 'admin_dashboard' %}"><i class='bx bxs-dashboard icon'></i> Dashboard</a>
+        <a href="{% url 'user_management' %}"><i class='bx bxs-edit' ></i> User Management</a>
+        <a href="{% url 'admin_profile' %}"><i class='bx bxs-user'></i> Profile</a>
+        <a href="{% url 'logout_admin' %}"><i class='bx bxs-log-out icon'></i> Logout</a>
     </nav>
 </header>

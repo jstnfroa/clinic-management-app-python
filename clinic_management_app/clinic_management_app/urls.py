@@ -17,12 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import main.views as views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('staff_login/', views.staff_login, name='staff_login'),
     path('admin_login/', views.admin_login, name='admin_login'),
     
+    #PATIENT-SIDE
+
     # STAFF-SIDE
     path('staff_dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('staff_queuing/', views.staff_queuing, name='staff_queuing'),
@@ -30,4 +34,13 @@ urlpatterns = [
     path('staff_patient_record/', views.staff_patient_record, name='staff_patient_record'),
     path('staff_profile/', views.staff_profile, name='staff_profile'),
     path('logout_staff/', views.staff_logout, name='logout_staff'),
+
+    # ADMIN-SIDE
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('user_management/', views.admin_user_management, name='user_management'),
+    path('admin_profile/', views.admin_profile, name='admin_profile'),
+    path('logout_admin/', views.admin_logout, name='logout_admin'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
