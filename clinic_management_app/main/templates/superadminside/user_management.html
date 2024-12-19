@@ -27,10 +27,10 @@
             </div>
         </div>
 
-        <!-- Add Patient Button -->
+        <!-- Add Staff Button -->
         <div class="div1">
-            <button class="add-patient-btn" id="openModalBtn">Add Patient</button>
-        </div>
+            <button class="add-patient-btn" id="openModalBtn">Add Staff</button>
+        </div>        
 
         <!-- Placeholder Div -->
         <div class="div3"></div>
@@ -56,96 +56,48 @@
         </div>
     </div>
 
-    <!-- Modal for Adding Patient -->
-    <div id="patientModal" class="modal">
+    <!-- Modal for Adding Staff -->
+    <div id="staffModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeModalBtn">&times;</span>
-            <h2>Add Patient</h2>
-            <form class="form-container">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-    
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-    
-                <label for="confirm-password">Confirm Password:</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
-    
+            <h2>Add Staff</h2>
+            <form id="addStaffForm" class="form-container" enctype="multipart/form-data">
                 <label for="fullname">Full Name:</label>
                 <input type="text" id="fullname" name="fullname" required>
     
-                <label for="student-emp-no">Student/Employee No.:</label>
-                <input type="text" id="student-emp-no" name="student-emp-no" required>
-    
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" required>
-    
-                <label for="lot-no">Lot No.:</label>
-                <input type="text" id="lot-no" name="lot-no" required>
-    
-                <label for="barangay">Barangay:</label>
-                <input type="text" id="barangay" name="barangay" required>
-    
-                <label for="street">Street:</label>
-                <input type="text" id="street" name="street" required>
-    
-                <label for="city-province">City/Province:</label>
-                <input type="text" id="city-province" name="city-province" required>
-    
-                <label for="age">Age:</label>
-                <input type="number" id="age" name="age" required>
-    
-                <label for="sex">Sex:</label>
-                <select id="sex" name="sex" required>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="Nurse">Nurse</option>
+                    <option value="Dentist">Dentist</option>
+                    <option value="Physician">Physician</option>
                 </select>
     
-                <label for="college-office">College/Office:</label>
-                <input type="text" id="college-office" name="college-office" required>
+                <label for="email-address">Email Address:</label>
+                <input type="email" id="email-address" name="email-address" required>
     
-                <label for="course-year-designation">Course & Year/Designation:</label>
-                <input type="text" id="course-year-designation" name="course-year-designation" required>
+                <label for="contact-number">Contact Number:</label>
+                <input type="text" id="contact-number" name="contact-number" required>
     
-                <label for="emergency-contact">Emergency Contact:</label>
-                <input type="text" id="emergency-contact" name="emergency-contact" required>
+                <label for="password">Password:</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required>
+                </div>
     
-                <label for="blood-type">Blood Type:</label>
-                <input type="text" id="blood-type" name="blood-type" required>
+                <label for="confirm-password">Confirm Password:</label>
+                <div class="password-container">
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
     
-                <label for="allergies">Allergies:</label>
-                <input type="text" id="allergies" name="allergies">
-    
-                <label for="priority">Priority:</label>
-                <select id="priority" name="priority" required>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
+                <!-- Profile Image Upload -->
+                <label for="profile-image">Profile Image:</label>
+                <input type="file" id="profile-image" name="profile-image" accept="image/*">
     
                 <button type="submit">Submit</button>
             </form>
         </div>
     </div>
 
-    <script>
-        // Modal functionality
-        const openModalBtn = document.getElementById("openModalBtn");
-        const modal = document.getElementById("patientModal");
-        const closeModalBtn = document.getElementById("closeModalBtn");
-
-        openModalBtn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        closeModalBtn.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
+    {% load static %}
+    <script src="{% static 'js/superadmin/user_management.js' %}"></script>
 </body>
 </html>

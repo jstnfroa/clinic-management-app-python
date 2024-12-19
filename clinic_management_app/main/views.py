@@ -2,7 +2,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib import messages
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -185,12 +187,35 @@ def admin_profile(request):
 
     # Handle profile update form submission
     if request.method == 'POST':
-        # Get updated data from form
+        # If the form has password change data
+        if 'old_password' in request.POST:
+            old_password = request.POST.get('old_password')
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+
+            # Validate the old password (make sure it's correct)
+            if not check_password(old_password, admin.password):
+                messages.error(request, "Old password is incorrect.")
+                return redirect('admin_profile')  # Redirect to admin profile page
+
+            # Ensure new password and confirm password match
+            if new_password != confirm_password:
+                messages.error(request, "New passwords do not match.")
+                return redirect('admin_profile')
+
+            # Update password in the database
+            admin.password = make_password(new_password)
+            admin.save()
+
+            # Show success message
+            messages.success(request, "Password changed successfully!")
+            return redirect('admin_profile')  # Redirect to profile page after password change
+
+        # Handle other profile data (if it's not a password change)
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
         contact_number = request.POST.get('contact_number')
-        
-        # Ensure the email is not empty
+
         if not email:
             messages.error(request, "Email is required")
             return redirect('admin_profile')
@@ -207,9 +232,31 @@ def admin_profile(request):
         # Save the updated admin details (without changing the password)
         admin.save()
 
-        # Show success message
         messages.success(request, "Profile updated successfully!")
         return redirect('admin_profile')  # Redirect to the same page to reflect changes
 
-    # Pass the admin details to the template
     return render(request, 'superadminside/profile.html', {'admin': admin, 'role': admin.role})
+
+@admin_login_required
+def update_profile_image(request):
+    if request.method == 'POST' and request.FILES.get('profile_image'):
+        try:
+            # Retrieve admin email from session (same as in admin_profile view)
+            admin_email = request.session.get('admin_email')
+            if not admin_email:
+                return JsonResponse({'success': False, 'error': 'Admin email not found in session.'}, status=400)
+
+            # Retrieve the Admin object based on the session email
+            admin = models.Admin.objects.get(email=admin_email)
+            
+            # Update the profile image
+            admin.profile_image = request.FILES['profile_image']
+            admin.save()
+
+            return JsonResponse({'success': True})
+
+        except ObjectDoesNotExist:
+            # Handle case when Admin object is not found
+            return JsonResponse({'success': False, 'error': 'Admin user does not exist.'}, status=404)
+
+    return JsonResponse({'success': False, 'error': 'No profile image provided.'}, status=400)

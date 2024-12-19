@@ -40,7 +40,9 @@ urlpatterns = [
     path('user_management/', views.admin_user_management, name='user_management'),
     path('admin_profile/', views.admin_profile, name='admin_profile'),
     path('logout_admin/', views.admin_logout, name='logout_admin'),
-]
+    path('update-profile-image/', views.update_profile_image, name='update_profile_image'),
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

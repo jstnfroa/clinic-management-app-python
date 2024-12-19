@@ -1,4 +1,4 @@
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password, check_password, is_password_usable
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 #Patient Model
@@ -89,6 +89,7 @@ class Staff(models.Model):
     staff_id = models.AutoField(primary_key=True)
     admin = models.ForeignKey('Admin', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    profile_image = models.ImageField(upload_to='staff_profile_pics/', blank=True, null=True)
     role = models.CharField(
         max_length=50,
         choices=[
@@ -109,7 +110,6 @@ class Staff(models.Model):
     def __str__(self):
         return self.name
 
-
 #Admin Model
 class Admin(models.Model):
     admin_id = models.AutoField(primary_key=True)
@@ -121,7 +121,8 @@ class Admin(models.Model):
     role = models.CharField(max_length=50, default='Super Admin')
 
     def save(self, *args, **kwargs):
-        if self.password:  # Hash the password only if it's not already hashed
+        # Hash the password only if it's not already hashed
+        if self.password and not is_password_usable(self.password):
             self.password = make_password(self.password)
         super(Admin, self).save(*args, **kwargs)
 

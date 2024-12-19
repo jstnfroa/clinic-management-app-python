@@ -1,0 +1,208 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('staffbg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    max-width: 1200px;
+    width: 100%;
+    flex-wrap: wrap; /* Allow the layout to wrap on smaller screens */
+}
+
+.main-container h2 {
+    color: #2463A9;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.form-section {
+    justify-content: center;
+    align-items: center;
+}
+
+.form-section h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.form-section form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-section label {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.form-section input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 250px;
+}
+
+.form-section button {
+    padding: 15px;
+    background-color: #2463A9;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    border-radius: 20px;
+    width: 100px;
+}
+
+.form-section button:hover {
+    background-color: #415366;
+}
+
+.welcome-section {
+    text-align: left;
+    margin-left: 40px;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.welcome-section h1 {
+    font-size: 60px;
+    color: #234A6B;
+    margin: 0;
+    padding: 0;
+}
+
+.welcome-section h2 {
+    font-size: 60px;
+    color: #2463A9;
+    margin: 0;
+    padding: 0;
+}
+
+.welcome-section p {
+    font-size: 30px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.highlight {
+    color: #21AEFF;
+}
+
+
+
+@media (max-width: 1024px) {
+    .welcome-section h1,
+    .welcome-section h2 {
+        font-size: 48px; 
+    }
+
+    .welcome-section p {
+        font-size: 24px;
+    }
+
+    .login-container {
+        max-width: 90%; 
+        padding: 20px;
+    }
+
+    .form-section input,
+    .form-section button {
+        width: 100%; /* Make input and button fill the container on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome-section {
+        margin-left: 20px; /* Reduce left margin on smaller screens */
+        padding: 10px;
+    }
+
+    .login-container {
+        max-width: 90%; /* Make login container take more space */
+        padding: 20px;
+    }
+
+    .form-section h2 {
+        font-size: 20px; /* Adjust heading size for mobile */
+    }
+
+    .form-section input,
+    .form-section button {
+        width: 100%; /* Ensure input fields and button span the width */
+    }
+
+    .welcome-section h1,
+    .welcome-section h2 {
+        font-size: 36px; /* Further adjust header size for mobile */
+    }
+
+    .welcome-section p {
+        font-size: 18px; /* Adjust paragraph font size */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-container {
+        flex-direction: column; /* Stack the sections vertically on small screens */
+        padding: 10px;
+    }
+
+    .login-container {
+        max-width: 100%; /* Ensure login container takes full width */
+    }
+
+    .form-section h2 {
+        font-size: 18px; /* Adjust heading size */
+    }
+
+    .form-section input,
+    .form-section button {
+        width: 100%; /* Ensure full-width inputs and buttons */
+    }
+
+    .welcome-section h1,
+    .welcome-section h2 {
+        font-size: 28px; /* Smaller headers for very small screens */
+    }
+
+    .welcome-section p {
+        font-size: 16px; /* Adjust paragraph size */
+    }
+}

@@ -37,8 +37,11 @@
             <div class="profile-header">
                 <div class="profile-image-wrapper">
                     <!-- Use the admin's profile image if available, else display a default image -->
-                    <img src="{% if admin.profile_image %}{{ admin.profile_image.url }}{% else %}path/to/default-image.jpg{% endif %}" alt="Profile Image" class="profile-image" />
+                    <img src="{% if admin.profile_image %}{{ admin.profile_image.url }}{% else %}/static/img/default-profile.jpg{% endif %}" alt="Profile Image" class="profile-image" />
                     <span class="edit-icon">✎</span>
+
+                    <!-- Hidden file input to upload a new image -->
+                    <input type="file" id="profile-image-input" style="display: none;" accept="image/*" />
                 </div>
                 <div class="profile-info">
                     <h2>{{ admin.full_name }}</h2>
@@ -73,7 +76,7 @@
                     <span class="close-btn" id="close-modal">&times;</span>
                     <h3>Edit Profile</h3>
                     
-                    <form id="edit-profile-form" method="POST" enctype="multipart/form-data">
+                    <form id="edit-profile-form" method="POST" enctype="multipart/form-data" action="#">
                         {% csrf_token %}
                         
                         <div class="form-group">
@@ -93,7 +96,7 @@
 
                         <div class="form-group">
                             <label for="profile_image">Profile Image</label>
-                            <input type="file" id="profile_image" name="profile_image">
+                            <input type="file" id="profile_image" name="profile_image" accept="image/*">
                         </div>
 
                         <button type="submit" class="btn">Save Changes</button>
@@ -107,7 +110,7 @@
                     <span class="close-btn" id="close-change-password-modal">&times;</span>
                     <h3>Change Password</h3>
 
-                    <form id="change-password-form" method="POST" enctype="multipart/form-data">
+                    <form id="change-password-form" method="POST" enctype="multipart/form-data" action="#">
                         {% csrf_token %}
 
                         <div class="form-group">
@@ -135,8 +138,8 @@
 
         </div>        
     </main>
-</body>
 
-{% load static %}
-<script src="{% static 'js/superadmin/profile.js' %}"></script>
+    {% load static %}
+    <script src="{% static 'js/superadmin/profile.js' %}"></script>
+</body>
 </html>
