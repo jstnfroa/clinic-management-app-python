@@ -2,7 +2,11 @@ from django.contrib.auth.hashers import make_password, check_password, is_passwo
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-#Patient Model
+
+from datetime import date
+from django.db import models
+
+# Patient Model
 class Patient(models.Model):
     BLOOD_TYPE_CHOICES = [
         ('A+', 'A+'),
@@ -47,44 +51,53 @@ class Patient(models.Model):
     ]
 
     patient_id = models.AutoField(primary_key=True, verbose_name="Patient ID")
-    student_employee_id= models.IntegerField(unique=True,null=True,verbose_name="Student Employee ID")
+    student_employee_id= models.IntegerField(unique=True, null=True, verbose_name="Student Employee ID")
     first_name = models.CharField(max_length=50, verbose_name="First Name")
     middle_name = models.CharField(max_length=50, verbose_name="Middle Name", blank=True, null=True)
     last_name = models.CharField(max_length=50, verbose_name="Last Name")
+    
     @property
     def full_name(self):
         return f"{self.middle_name} {self.last_name}"
-    age = models.IntegerField()
+    
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name="Date of Birth")
+    
+    @property
+    def age(self):
+        if self.date_of_birth:
+            today = date.today()
+            return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+        return None  # Return None if date_of_birth is not set
+
     sex = models.CharField(max_length=6, choices=[('Male', 'Male'), ('Female', 'Female')])
     email_address = models.EmailField(unique=True, verbose_name="Email Address")
     password = models.CharField(max_length=255)
-    # Replace with hashed password handling
     contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
     medical_history = models.TextField(blank=True, null=True)
     address_lot_no = models.CharField(max_length=50, null=True, verbose_name="Address Lot Number")
     address_street = models.CharField(max_length=50, null=True, verbose_name="Address Street Number")
-    address_barangay = models.CharField(max_length=50, null= True, verbose_name="Address Barangay")
+    address_barangay = models.CharField(max_length=50, null=True, verbose_name="Address Barangay")
     address_municipality = models.CharField(max_length=50, null=True, verbose_name="Address Municipality")
     address_province = models.CharField(max_length=50, null=True, verbose_name="Address Province")
     campus = models.CharField(max_length=100, verbose_name="Campus")
-    college_office = models.CharField(max_length=100, null=True, choices= COLLEGE_OFFICE_CHOICES,verbose_name="College/Office")
+    college_office = models.CharField(max_length=100, null=True, choices=COLLEGE_OFFICE_CHOICES, verbose_name="College/Office")
     course_year_section = models.CharField(max_length=100, verbose_name="Course/Year/Section")
     emergency_contact = models.CharField(max_length=100, verbose_name="Emergency Contact Name")
     emergency_contact_number = models.CharField(max_length=15, verbose_name="Emergency Contact Number")
     blood_type = models.CharField(max_length=3, null=True, choices=BLOOD_TYPE_CHOICES)
     patient_role = models.CharField(max_length=25, null=True, choices=PATIENT_ROLE_CHOICES)
-    priority_type= models.CharField(max_length=10, null=True, choices=PRIORITY_TYPE_CHOICES)
+    priority_type = models.CharField(max_length=10, null=True, choices=PRIORITY_TYPE_CHOICES)
     profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True)
     allergies = models.TextField(blank=True, null=True)
-
+    is_logged_in = models.BooleanField(default=False, verbose_name="Is Logged In")
+    
     @property
     def full_address(self):
-        return f"{self.address_lot_no } {self.address_street} {self.address_barangay} , {self.address_municipality}, {self.address_province}"
+        return f"{self.address_lot_no} {self.address_street} {self.address_barangay}, {self.address_municipality}, {self.address_province}"
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.patient_id})"
 
-#STAFF MODEL
 class Staff(models.Model):
     staff_id = models.AutoField(primary_key=True)
     admin = models.ForeignKey('Admin', on_delete=models.CASCADE)
@@ -93,25 +106,24 @@ class Staff(models.Model):
     
     role = models.CharField(
         max_length=50,
-        choices=[
-            ('Nurse', 'Nurse'),
-            ('Dentist', 'Dentist'),
-            ('Physician', 'Physician')
-        ]
+        choices=[('Nurse', 'Nurse'), ('Dentist', 'Dentist'), ('Physician', 'Physician')]
     )
     
     email_address = models.EmailField(unique=True)
     
-    # Ensure the password is always hashed
     password = models.CharField(max_length=255)
     
-    contact_number = models.CharField(
-        max_length=15,
-        validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")]
+    contact_number = models.CharField(max_length=15, validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$')])
+
+    # New field to track staff status (active/inactive)
+    status = models.CharField(
+        max_length=10,
+        choices=[('Active', 'Active'), ('Inactive', 'Inactive')],
+        default='Active'
     )
 
     def save(self, *args, **kwargs):
-        if not is_password_usable(self.password):  # Check if the password is not already hashed
+        if not is_password_usable(self.password):
             self.password = make_password(self.password)
         super(Staff, self).save(*args, **kwargs)
 
@@ -141,7 +153,6 @@ class Admin(models.Model):
 
     def __str__(self):
         return self.email
-
 
 #Appointment Model
 class Appointment(models.Model):
@@ -209,7 +220,6 @@ class Appointment(models.Model):
     )  #Save depends on what container to be picked in patient_queue view.
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient}"
-
 
 # Medical Record Model
 class MedicalRecord(models.Model):

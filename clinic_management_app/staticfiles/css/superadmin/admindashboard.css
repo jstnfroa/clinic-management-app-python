@@ -25,7 +25,21 @@ body {
     font-weight: bold;
     color: #154975;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    justify-content: center;  /* Center content horizontally */
+    align-items: center;      /* Center content vertically */
+    text-align: center;       /* Ensure text is centered if it spans multiple lines */
+    min-height: 100px;         /* Optional: Set a minimum height for better alignment */
 }
+
+/* Optional: If you want the content inside to be styled separately */
+.div1 span, .div2 span, .div3 span, .div4 span {
+    font-weight: bold;
+    font-size: 20px;
+    color: #00a1ff; /* Optional: Add specific styling to the text if needed */
+}
+
 
 .div5, .div6, .div7, .div8 {
     background-color: #ffffff;
@@ -35,6 +49,10 @@ body {
     font-weight: bold;
     color: #154975;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .div1 { grid-area: 1 / 1 / 3 / 2; }

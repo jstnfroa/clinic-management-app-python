@@ -143,6 +143,7 @@ button[name="filter"]:hover {
     align-items: center;
     z-index: 1000;
     display: none; /* Hidden by default */
+    overflow-y: auto; /* Add scroll bar if content exceeds the height */
 }
 
 /* Modal Content */

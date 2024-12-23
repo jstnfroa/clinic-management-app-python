@@ -17,14 +17,230 @@
     {% block content %}{% endblock %}
 
     <div class="parent">
-        <div class="div1"> Total Patients Registered</div>
-        <div class="div2"> Appointments Today </div>
-        <div class="div3"> Active Staff</div>
-        <div class="div4"> Active Patients</div>
-        <div class="div5"> Current Queue Status</div>
-        <div class="div6">  User Age Destribution</div>
-        <div class="div7"> Daily Consultations</div>
-        <div class="div8"> Campus Statistics</div>
+        <div class="div1">
+            Total Patients Registered: <span class="total-count">{{ total_patients }}</span>
+        </div>
+        <div class="div2">
+            Appointments Today: <span class="total-count">{{ total_appointments_today }}</span>
+            Scheduled Appointments: <span class="total-count">{{ scheduled_appointments }}</span>
+            Completed Appointments: <span class="total-count">{{ completed_appointments }}</span>
+            Canceled Appointments: <span class="total-count">{{ canceled_appointments }}</span>
+        </div>
+        <div class="div3"> <h5>Active Staff by Role:</h5>
+            Nurses: <span class="total-count">{{ active_nurses }}</span>
+            Dentists: <span class="total-count">{{ active_dentists }}</span>
+            Physicians: <span class="total-count">{{ active_physicians }}</span>
+        </div>
+        <div class="div4">
+            <h5>Active Patients by Role:</h5>
+            Students: <span class="total-count">{{ active_students }}</span><br>
+            Faculty: <span class="total-count">{{ active_faculty }}</span><br>
+            Non-Academic Personnel: <span class="total-count">{{ active_non_academic }}</span>
+        </div>
+        <div class="div5">
+            <h5>Current Queue Status</h5>
+            <canvas id="queueStatusChart" width="400" height="400"></canvas>
+        </div>
+        
+        <div class="div6">
+            <h5>User Age Distribution</h5>
+            <canvas id="ageDistributionChart" width="400" height="400"></canvas>
+        </div>
+        
+        <div class="div7">
+            <h3>Daily Consultations</h3>
+            <canvas id="dailyConsultationsChart" width="400" height="200"></canvas>
+        </div>
+        <div class="div8">
+            <h3>Daily Consultations</h3>
+            <canvas id="campusStatisticsChart" width="400" height="200"></canvas>
+        </div>
+
     </div>
+
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Fetch the data passed from Django view
+        const patientsServing = {{ patients_serving }};
+        const patientsServed = {{ patients_served }};
+        const patientsWaiting = {{ patients_waiting }};
+    
+        // Set up data for the pie chart
+        const data = {
+            labels: ['Patients Serving', 'Patients Served', 'Patients Waiting'],
+            datasets: [{
+                data: [patientsServing, patientsServed, patientsWaiting],
+                backgroundColor: ['#FF5733', '#33FF57', '#3357FF'],
+                hoverOffset: 4
+            }]
+        };
+    
+        // Create the pie chart
+        const ctx = document.getElementById('queueStatusChart').getContext('2d');
+        const queueStatusChart = new Chart(ctx, {
+            type: 'pie',  // Pie chart
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                // Format the tooltip to display the value
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    // Fetch the data passed from Django view for Age Distribution
+    const age0_17 = {{ age_0_17|default:0 }};
+    const age18_25 = {{ age_18_25|default:0 }};
+    const age26_40 = {{ age_26_40|default:0 }};
+    const age41_60 = {{ age_41_60|default:0 }};
+    const age60plus = {{ age_60_plus|default:0 }};
+
+    // Set up data for the Age Distribution pie chart
+    const ageDistributionData = {
+        labels: [
+            `0-17 years old (${age0_17.toFixed(2)}%)`,
+            `18-25 years old (${age18_25.toFixed(2)}%)`,
+            `26-40 years old (${age26_40.toFixed(2)}%)`,
+            `41-60 years old (${age41_60.toFixed(2)}%)`,
+            `60+ years old (${age60plus.toFixed(2)}%)`
+        ],
+        datasets: [{
+            data: [age0_17, age18_25, age26_40, age41_60, age60plus],
+            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FFEB33', '#FF3357'],
+            hoverOffset: 4
+        }]
+    };
+
+    // Create the Age Distribution pie chart
+    const ageDistributionCtx = document.getElementById('ageDistributionChart').getContext('2d');
+    const ageDistributionChart = new Chart(ageDistributionCtx, {
+        type: 'pie',  // Pie chart
+        data: ageDistributionData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            // Format the tooltip to display the value
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Fetch the consultation data passed from Django view
+    const dailyConsultations = {{ daily_consultations|safe }};
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+    // Prepare data for the bar chart
+    const consultationData = {
+        labels: daysOfWeek,
+        datasets: [{
+            label: 'Number of Consultations',
+            data: dailyConsultations,
+            backgroundColor: '#3357FF',
+            borderColor: '#002BFF',
+            borderWidth: 1,
+        }]
+    };
+
+    // Create the bar chart
+    const consultationDatactx = document.getElementById('dailyConsultationsChart').getContext('2d');
+    const dailyConsultationsChart = new Chart(consultationDatactx, {
+        type: 'bar', // Bar chart
+        data: consultationData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Consultations'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Day of the Week'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Fetch the data passed from Django view
+    const collegeOffices = {{ college_offices|safe }};
+    const patientCounts = {{ patient_counts|safe }};
+
+    // Set up data for the bar chart
+    const campusData = {
+        labels: collegeOffices,
+        datasets: [{
+            label: 'Number of Patients',
+            data: patientCounts,
+            backgroundColor: '#3357FF',
+            borderColor: '#002BFF',
+            borderWidth: 1,
+        }]
+    };
+
+    // Create the bar chart
+    const campusDatactx = document.getElementById('campusStatisticsChart').getContext('2d');
+    const campusChart = new Chart(campusDatactx, {
+        type: 'bar', // Bar chart
+        data: campusData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Patients'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'College/Office'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    </script>
+
+    {% load static %}
+    <script src="{% static 'js/superadmin/admindashboard.js' %}"></script>
 </body>
 </html>

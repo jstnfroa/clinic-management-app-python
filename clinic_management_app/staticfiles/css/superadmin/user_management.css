@@ -130,7 +130,7 @@ button[name="filter"]:hover {
     color: #0056b3;
 }
 
-/* Modal Styling */
+/* Modal Container */
 .modal {
     position: fixed;
     top: 0;
@@ -145,14 +145,16 @@ button[name="filter"]:hover {
     display: none; /* Hidden by default */
 }
 
+/* Modal Content */
 .modal-content {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 600px;
-    width: 100%;
+    max-width: 600px; /* Adjust as needed */
+    width: 90%; /* Makes it responsive */
     position: relative;
+    transform: translate(0, 0); /* Ensures no additional positioning */
 }
 
 .close-btn {
@@ -175,23 +177,77 @@ button[name="filter"]:hover {
 /* Responsive Design */
 @media (max-width: 768px) {
     .parent {
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: 1fr; /* Stack columns in single column */
+        padding: 10px; /* Add padding for smaller screens */
+    }
+
+    /* Header Section */
+    h2 {
+        font-size: 20px; /* Reduce header font size */
+        margin-bottom: 15px;
     }
 
     form {
-        flex-direction: column;
+        flex-direction: column; /* Stack form fields vertically */
     }
 
     input, textarea, select {
         max-width: 100%;
+        font-size: 16px; /* Increase font size for easier readability */
     }
 
+    /* Patient Cards */
     .patient-card {
-        flex-direction: column;
+        flex-direction: column; /* Stack the patient card details vertically */
         align-items: flex-start;
+        padding: 10px; /* Adjust padding for smaller screens */
     }
 
     .patient-actions {
         margin-top: 10px;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95%; /* Make modal full-width on small screens */
+        max-width: 500px; /* Limit the width for very small screens */
+    }
+
+    .patient-card .info {
+        gap: 10px; /* Reduce gap in the patient info */
+    }
+
+    .patient-actions i {
+        font-size: 16px; /* Adjust icon size for smaller screens */
+    }
+
+    button, button[name="filter"] {
+        font-size: 12px; /* Make buttons smaller for small screens */
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Further adjustments for very small screens */
+    h2 {
+        font-size: 18px; /* Make header text even smaller */
+        margin-bottom: 10px;
+    }
+
+    input, textarea, select {
+        font-size: 14px; /* Further reduce font size */
+    }
+
+    .patient-card {
+        padding: 8px; /* Reduce padding even more */
+    }
+
+    button, button[name="filter"] {
+        font-size: 10px; /* Small button text */
+        padding: 6px 12px;
+    }
+
+    .patient-actions i {
+        font-size: 14px; /* Smaller icons */
     }
 }

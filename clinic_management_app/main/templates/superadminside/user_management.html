@@ -95,25 +95,44 @@
                 <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px;">Edit Staff</h2>
                 <form id="editStaffForm" style="display: flex; flex-direction: column; gap: 15px;">
                     <input type="hidden" id="staffId" name="staffId">
+                    
+                    <!-- Name Field -->
                     <label for="name" style="font-size: 16px;">Name</label>
                     <input type="text" id="name" name="name" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    
+                    <!-- Role Field -->
                     <label for="role" style="font-size: 16px;">Role</label>
                     <select id="role" name="role" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
                         <option value="Nurse">Nurse</option>
                         <option value="Dentist">Dentist</option>
                         <option value="Physician">Physician</option>
                     </select>
+                    
+                    <!-- Email Address Field -->
                     <label for="email_address" style="font-size: 16px;">Email Address</label>
                     <input type="email" id="email_address" name="email_address" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    
+                    <!-- Contact Number Field -->
                     <label for="contact_number" style="font-size: 16px;">Contact Number</label>
                     <input type="text" id="contact_number" name="contact_number" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    
+                    <!-- Profile Image Field -->
                     <label for="profile_image" style="font-size: 16px;">Profile Image</label>
                     <input type="file" id="profile_image" name="profile_image" style="font-size: 16px;">
+                    
+                    <!-- Status Field (Active/Inactive) -->
+                    <label for="status" style="font-size: 16px;">Status</label>
+                    <select id="status" name="status" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+        
+                    <!-- Submit Button -->
                     <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Save Changes</button>
                 </form>
             </div>
         </div>
-
+        
         <!-- Modal for Adding Staff -->
         <div id="staffModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
             <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow-y: auto; max-height: 80%;">

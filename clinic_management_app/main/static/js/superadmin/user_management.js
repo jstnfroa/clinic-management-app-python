@@ -140,6 +140,8 @@ function editStaff(staffId) {
                 document.getElementById('role').value = staff.role;
                 document.getElementById('email_address').value = staff.email_address;
                 document.getElementById('contact_number').value = staff.contact_number;
+                // Set the status field in the modal
+                document.getElementById('status').value = staff.status;  // Update status field
             }
         })
         .catch(error => {
@@ -170,9 +172,10 @@ document.getElementById('editStaffForm').addEventListener('submit', function(e) 
                 'Success!',
                 'Staff updated successfully!',
                 'success'
-            );
-            closeModalById('editStaffModal');
-            location.reload();
+            ).then(() => {
+                // Reload the page only after the alert is closed
+                location.reload();
+            });
         } else {
             // Error alert with SweetAlert2
             Swal.fire(
@@ -192,6 +195,7 @@ document.getElementById('editStaffForm').addEventListener('submit', function(e) 
         );
     });
 });
+
 
 function deleteStaff(staffId) {
     // Show a confirmation dialog using SweetAlert2
