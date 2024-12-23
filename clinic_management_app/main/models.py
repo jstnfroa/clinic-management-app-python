@@ -1,5 +1,6 @@
 from django.contrib.auth.hashers import make_password, check_password, is_password_usable
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 #Patient Model
 class Patient(models.Model):
@@ -83,13 +84,13 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.patient_id})"
 
-
-#Staff Model
+#STAFF MODEL
 class Staff(models.Model):
     staff_id = models.AutoField(primary_key=True)
     admin = models.ForeignKey('Admin', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     profile_image = models.ImageField(upload_to='staff_profile_pics/', blank=True, null=True)
+    
     role = models.CharField(
         max_length=50,
         choices=[
@@ -98,17 +99,29 @@ class Staff(models.Model):
             ('Physician', 'Physician')
         ]
     )
+    
     email_address = models.EmailField(unique=True)
+    
+    # Ensure the password is always hashed
     password = models.CharField(max_length=255)
-    contact_number = models.CharField(max_length=15)
+    
+    contact_number = models.CharField(
+        max_length=15,
+        validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")]
+    )
 
     def save(self, *args, **kwargs):
-        if self.password:  # Hash the password only if it's not already hashed
+        if not is_password_usable(self.password):  # Check if the password is not already hashed
             self.password = make_password(self.password)
         super(Staff, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Staff Member"
+        verbose_name_plural = "Staff Members"
+
 
 #Admin Model
 class Admin(models.Model):

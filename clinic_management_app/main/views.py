@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -8,9 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import get_object_or_404, render
+from django.core.files.storage import FileSystemStorage
 from functools import wraps
 from django.contrib import messages
 from . import models
+from .models import Staff
 
 # Create your views here.
 def staff_login_required(view_func):
@@ -173,7 +176,75 @@ def admin_user_management(request):
     admin_email = request.session['admin_email']
     admin = models.Admin.objects.get(email=admin_email)
 
-    return render(request, 'superadminside/user_management.html', {'admin': admin})
+    # Get the search query from the request (if any)
+    search_query = request.GET.get('search', '')
+    role_filter = request.GET.get('role_filter', '')
+    filter_option = request.GET.get('filter', '')
+
+    # Get staff list, filtered by search query if present
+    staff_list = models.Staff.objects.all()
+
+    if search_query:
+        staff_list = staff_list.filter(name__icontains=search_query)
+
+    # Apply the role filter if provided
+    if role_filter:
+        staff_list = staff_list.filter(role=role_filter)
+
+    # Apply the filter option (alphabetical, newest)
+    if filter_option == 'alphabetical':
+        staff_list = staff_list.order_by('name')  # Alphabetical order
+    elif filter_option == 'newest':
+        staff_list = staff_list.order_by('-staff_id')  # Newest first (based on staff_id)
+
+    # Handle staff creation (existing code)
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Process the form data to add new staff
+        fullname = request.POST.get('fullname')
+        role = request.POST.get('role')
+        email_address = request.POST.get('email-address')
+        contact_number = request.POST.get('contact-number')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm-password')
+        profile_image = request.FILES.get('profile-image')
+
+        # Check if password and confirm password match
+        if password != confirm_password:
+            return JsonResponse({'error': 'Passwords do not match'}, status=400)
+
+        # Hash the password before saving
+        hashed_password = make_password(password)
+
+        # Save the profile image if uploaded
+        fs = FileSystemStorage()
+        if profile_image:
+            profile_image_path = fs.save(profile_image.name, profile_image)
+            profile_image_url = fs.url(profile_image_path)
+        else:
+            profile_image_url = None
+
+        # Create the staff member
+        try:
+            new_staff = models.Staff.objects.create(
+                admin=admin,
+                name=fullname,
+                role=role,
+                email_address=email_address,
+                password=hashed_password,
+                contact_number=contact_number,
+                profile_image=profile_image_url
+            )
+            return JsonResponse({'message': 'Staff added successfully'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    # Render the template with staff list, admin details, search query, and filter options
+    return render(request, 'superadminside/user_management.html', {
+        'admin': admin, 
+        'staff_list': staff_list, 
+        'search_query': search_query, 
+        'role_filter': role_filter
+    })
 
 @admin_login_required
 def admin_profile(request):
@@ -260,3 +331,49 @@ def update_profile_image(request):
             return JsonResponse({'success': False, 'error': 'Admin user does not exist.'}, status=404)
 
     return JsonResponse({'success': False, 'error': 'No profile image provided.'}, status=400)
+
+# View staff details
+def view_staff(request, staff_id):
+    staff = get_object_or_404(Staff, pk=staff_id)
+    staff_data = {
+        'staff_id': staff.staff_id,
+        'name': staff.name,
+        'role': staff.role,
+        'email_address': staff.email_address,
+        'contact_number': staff.contact_number,
+        'profile_image': staff.profile_image.url if staff.profile_image else None
+    }
+    return JsonResponse({'staff': staff_data})
+
+# Edit staff details
+def edit_staff(request, staff_id):
+    staff = get_object_or_404(Staff, pk=staff_id)
+    
+    if request.method == 'POST':
+        staff.name = request.POST.get('name')
+        staff.role = request.POST.get('role')
+        staff.email_address = request.POST.get('email_address')
+        staff.contact_number = request.POST.get('contact_number')
+
+        # Optionally handle profile image and password updates
+        if 'profile_image' in request.FILES:
+            staff.profile_image = request.FILES['profile_image']
+        
+        staff.save()  # Save the updated staff details
+
+        # Return a JSON response indicating success
+        return JsonResponse({'success': True, 'message': 'Staff updated successfully'})
+
+    return render(request, 'superadminside/edit_staff.html', {'staff': staff})
+
+# Delete staff member
+def delete_staff(request, staff_id):
+    if request.method == 'POST':
+        try:
+            staff = get_object_or_404(Staff, staff_id=staff_id)
+            staff.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Staff.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Staff not found'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+

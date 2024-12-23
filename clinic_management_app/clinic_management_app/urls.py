@@ -41,6 +41,9 @@ urlpatterns = [
     path('admin_profile/', views.admin_profile, name='admin_profile'),
     path('logout_admin/', views.admin_logout, name='logout_admin'),
     path('update-profile-image/', views.update_profile_image, name='update_profile_image'),
+    path('staff/view/<int:staff_id>/', views.view_staff, name='view_staff'),
+    path('staff/edit/<int:staff_id>/', views.edit_staff, name='edit_staff'),
+    path('delete_staff/<int:staff_id>/', views.delete_staff, name='delete_staff'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

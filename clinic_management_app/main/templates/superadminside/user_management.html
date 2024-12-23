@@ -12,6 +12,12 @@
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'> <!-- Import box icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- SweetAlert CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 </head>
 <body>
     {% include 'includes/superadmin_header.html' %}
@@ -21,9 +27,26 @@
         <!-- Search Section -->
         <div class="div2">
             <div class="search-container">
-                <input type="text" placeholder="Search">
-                <button><i class="fa fa-search"></i> Search</button>
-                <button><i class="fa fa-filter"></i> Filter</button>
+                <form method="get" action="{% url 'user_management' %}" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" name="search" placeholder="Search" value="{{ search_query }}" style="padding: 10px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; width: 250px;">
+                    <button type="submit" style="background-color: #007BFF; color: white; border: none; cursor: pointer; border-radius: 1px; font-size: 14px;">
+                        <i class="fa fa-search" style="margin-right: 5px;"></i> Search
+                    </button>
+                </form>
+                
+                <form method="get" action="{% url 'user_management' %}">
+                    <button type="submit" name="filter" value="alphabetical"><i class="fa fa-filter"></i> Alphabetical</button>
+                    <button type="submit" name="filter" value="newest"><i class="fa fa-filter"></i> Newly Added</button>
+        
+                    <select name="role_filter" onchange="this.form.submit()" style="padding: 10px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; width: 237px; cursor: pointer;">
+                        <option value="">Filter by Role</option>
+                        <option value="Nurse" {% if request.GET.role_filter == 'Nurse' %}selected{% endif %}>Nurse</option>
+                        <option value="Dentist" {% if request.GET.role_filter == 'Dentist' %}selected{% endif %}>Dentist</option>
+                        <option value="Physician" {% if request.GET.role_filter == 'Physician' %}selected{% endif %}>Physician</option>
+                    </select>
+                    
+                </form>
+        
             </div>
         </div>
 
@@ -35,68 +58,101 @@
         <!-- Placeholder Div -->
         <div class="div3"></div>
 
-        <!-- Patient Records -->
         <div class="div4">
+            {% for staff in staff_list %}
             <div class="patient-card">
                 <div class="info">
-                    <img src="https://via.placeholder.com/40" alt="User">
+                    <img src="{% if staff.profile_image %}{{ staff.profile_image.url }}{% else %}https://via.placeholder.com/40{% endif %}" alt="User" style="width: 40px; height: 40px; object-fit: cover;">
                     <div>
-                        <strong>Cruz, Lou Alyssa B.</strong>
-                        <div>Student</div>
+                        <strong>{{ staff.name }}</strong>
+                        <div>{{ staff.role }}</div>
                     </div>
                 </div>
                 <div class="patient-actions">
-                    <i class="fa fa-plus-circle"></i>
-                    <i class="fa fa-eye"></i>
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash"></i>
+                    <i class="fa fa-eye" onclick="viewStaff({{ staff.staff_id }})" style="cursor: pointer;"></i>
+                    <i class="fa fa-edit" onclick="editStaff({{ staff.staff_id }})" style="cursor: pointer;"></i>
+                    <i class="fa fa-trash" onclick="deleteStaff({{ staff.staff_id }})" style="cursor: pointer;"></i>
+                </div>
+            </div>            
+            {% endfor %}
+        </div>
+
+        <!-- View Staff Modal -->
+        <div id="viewStaffModal" class="modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; display: none;">
+            <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); position: relative;">
+                <span class="close-btn" onclick="closeModal('viewStaffModal')" style="position: absolute; top: 10px; right: 20px; font-size: 30px; color: #333; cursor: pointer; background: none; border: none;">&times;</span>
+                <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px;">Staff Details</h2>
+                <div id="staffDetailsContent" style="font-size: 16px; line-height: 1.6;">
+                    <!-- Staff details will be injected here -->
                 </div>
             </div>
-            <!-- Repeat more patient cards as needed -->
         </div>
-    </div>
 
-    <!-- Modal for Adding Staff -->
-    <div id="staffModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModalBtn">&times;</span>
-            <h2>Add Staff</h2>
-            <form id="addStaffForm" class="form-container" enctype="multipart/form-data">
-                <label for="fullname">Full Name:</label>
-                <input type="text" id="fullname" name="fullname" required>
-    
-                <label for="role">Role:</label>
-                <select id="role" name="role" required>
-                    <option value="Nurse">Nurse</option>
-                    <option value="Dentist">Dentist</option>
-                    <option value="Physician">Physician</option>
-                </select>
-    
-                <label for="email-address">Email Address:</label>
-                <input type="email" id="email-address" name="email-address" required>
-    
-                <label for="contact-number">Contact Number:</label>
-                <input type="text" id="contact-number" name="contact-number" required>
-    
-                <label for="password">Password:</label>
-                <div class="password-container">
-                    <input type="password" id="password" name="password" required>
-                </div>
-    
-                <label for="confirm-password">Confirm Password:</label>
-                <div class="password-container">
-                    <input type="password" id="confirm-password" name="confirm-password" required>
-                </div>
-    
-                <!-- Profile Image Upload -->
-                <label for="profile-image">Profile Image:</label>
-                <input type="file" id="profile-image" name="profile-image" accept="image/*">
-    
-                <button type="submit">Submit</button>
-            </form>
+        <!-- Edit Staff Modal -->
+        <div id="editStaffModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+            <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <span class="close-btn" onclick="closeModal('editStaffModal')" style="position: absolute; top: 10px; right: 20px; font-size: 30px; color: #333; cursor: pointer; background: none; border: none;">&times;</span>
+                <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px;">Edit Staff</h2>
+                <form id="editStaffForm" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="hidden" id="staffId" name="staffId">
+                    <label for="name" style="font-size: 16px;">Name</label>
+                    <input type="text" id="name" name="name" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    <label for="role" style="font-size: 16px;">Role</label>
+                    <select id="role" name="role" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                        <option value="Nurse">Nurse</option>
+                        <option value="Dentist">Dentist</option>
+                        <option value="Physician">Physician</option>
+                    </select>
+                    <label for="email_address" style="font-size: 16px;">Email Address</label>
+                    <input type="email" id="email_address" name="email_address" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    <label for="contact_number" style="font-size: 16px;">Contact Number</label>
+                    <input type="text" id="contact_number" name="contact_number" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    <label for="profile_image" style="font-size: 16px;">Profile Image</label>
+                    <input type="file" id="profile_image" name="profile_image" style="font-size: 16px;">
+                    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Save Changes</button>
+                </form>
+            </div>
         </div>
-    </div>
 
+        <!-- Modal for Adding Staff -->
+        <div id="staffModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModalBtn" onclick="closeModal('staffModal')">&times;</span>
+                <h2>Add Staff</h2>
+                <form id="addStaffForm" class="form-container" enctype="multipart/form-data" method="POST">
+                    {% csrf_token %}
+                    <label for="fullname">Full Name:</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                    <label for="role">Role:</label>
+                    <select id="role" name="role" required>
+                        <option value="Nurse">Nurse</option>
+                        <option value="Dentist">Dentist</option>
+                        <option value="Physician">Physician</option>
+                    </select>
+                    <label for="email-address">Email Address:</label>
+                    <input type="email" id="email-address" name="email-address" required>
+                    <label for="contact-number">Contact Number:</label>
+                    <input type="text" id="contact-number" name="contact-number" required>
+                    <label for="password">Password:</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <label for="confirm-password">Confirm Password:</label>
+                    <div class="password-container">
+                        <input type="password" id="confirm-password" name="confirm-password" required>
+                    </div>
+                    <!-- Profile Image Upload -->
+                    <label for="profile-image">Profile Image:</label>
+                    <input type="file" id="profile-image" name="profile-image" accept="image/*">
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+        
+    <script type="text/javascript">
+        var userManagementUrl = "{% url 'user_management' %}";
+    </script>
+    
     {% load static %}
     <script src="{% static 'js/superadmin/user_management.js' %}"></script>
 </body>
