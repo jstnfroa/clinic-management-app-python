@@ -1,34 +1,33 @@
-// Get the modal for adding staff
-var modal = document.getElementById('staffModal');
+// Open Add Staff Modal
+document.getElementById("openModalBtn").addEventListener("click", function() {
+    document.getElementById("staffModal").style.display = "flex"; // Open the add staff modal
+});
 
-// Get the button that opens the modal
-var openModalBtn = document.getElementById('openModalBtn');
-
-// Get the <span> element that closes the modal
-var closeModalBtn = document.getElementById('closeModalBtn');
-
-// Get the form for adding staff
-const addStaffForm = document.getElementById('addStaffForm');
-
-// Handle the opening of the modal
-openModalBtn.onclick = function() {
-    modal.style.display = 'block';
-}
-
-// Generalized function to close the modal
+// Close Modal Function
 function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';  // Close the specified modal
+    document.getElementById(modalId).style.display = "none"; // Close modal by ID
 }
 
-// Close modal when clicking outside of it
-window.onclick = function(event) {
-    var modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-        if (event.target === modal) {
-            closeModal(modal.id);  // Close the modal if clicked outside of it
-        }
-    });
+// Close staff modal when clicking the close button
+document.getElementById("closeModalBtn").addEventListener("click", function() {
+    closeModal('staffModal'); // Close the add staff modal
+});
+
+// For Edit and View modals, ensure the respective modals are handled correctly
+function viewStaff(staffId) {
+    // Add the logic to populate staff details dynamically and show the modal
+    document.getElementById("viewStaffModal").style.display = "flex";
 }
+
+function editStaff(staffId) {
+    // Populate the form fields for editing the staff and show the edit modal
+    document.getElementById("editStaffModal").style.display = "flex";
+}
+
+// Close edit staff modal
+document.querySelector(".close-btn").addEventListener("click", function() {
+    closeModal('editStaffModal'); // Close edit staff modal
+});
 
 
 // Handle form submission for adding staff

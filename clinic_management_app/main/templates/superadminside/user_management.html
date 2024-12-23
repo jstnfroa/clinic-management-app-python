@@ -90,7 +90,7 @@
 
         <!-- Edit Staff Modal -->
         <div id="editStaffModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
-            <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <div class="modal-content" style="background-color: #fff; margin: 2.5% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
                 <span class="close-btn" onclick="closeModal('editStaffModal')" style="position: absolute; top: 10px; right: 20px; font-size: 30px; color: #333; cursor: pointer; background: none; border: none;">&times;</span>
                 <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px;">Edit Staff</h2>
                 <form id="editStaffForm" style="display: flex; flex-direction: column; gap: 15px;">
@@ -115,36 +115,36 @@
         </div>
 
         <!-- Modal for Adding Staff -->
-        <div id="staffModal" class="modal">
-            <div class="modal-content">
-                <span class="close" id="closeModalBtn" onclick="closeModal('staffModal')">&times;</span>
-                <h2>Add Staff</h2>
-                <form id="addStaffForm" class="form-container" enctype="multipart/form-data" method="POST">
+        <div id="staffModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+            <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow-y: auto; max-height: 80%;">
+                <span class="close" id="closeModalBtn" onclick="closeModal('staffModal')" style="position: absolute; top: 10px; right: 20px; font-size: 30px; color: #333; cursor: pointer; background: none; border: none;">&times;</span>
+                <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px;">Add Staff</h2>
+                <form id="addStaffForm" class="form-container" enctype="multipart/form-data" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
                     {% csrf_token %}
-                    <label for="fullname">Full Name:</label>
-                    <input type="text" id="fullname" name="fullname" required>
-                    <label for="role">Role:</label>
-                    <select id="role" name="role" required>
+                    <label for="fullname" style="font-size: 16px;">Full Name:</label>
+                    <input type="text" id="fullname" name="fullname" required style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    <label for="role" style="font-size: 16px;">Role:</label>
+                    <select id="role" name="role" required style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
                         <option value="Nurse">Nurse</option>
                         <option value="Dentist">Dentist</option>
                         <option value="Physician">Physician</option>
                     </select>
-                    <label for="email-address">Email Address:</label>
-                    <input type="email" id="email-address" name="email-address" required>
-                    <label for="contact-number">Contact Number:</label>
-                    <input type="text" id="contact-number" name="contact-number" required>
-                    <label for="password">Password:</label>
+                    <label for="email-address" style="font-size: 16px;">Email Address:</label>
+                    <input type="email" id="email-address" name="email-address" required style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    <label for="contact-number" style="font-size: 16px;">Contact Number:</label>
+                    <input type="text" id="contact-number" name="contact-number" required style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                    <label for="password" style="font-size: 16px;">Password:</label>
                     <div class="password-container">
-                        <input type="password" id="password" name="password" required>
+                        <input type="password" id="password" name="password" required style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
                     </div>
-                    <label for="confirm-password">Confirm Password:</label>
+                    <label for="confirm-password" style="font-size: 16px;">Confirm Password:</label>
                     <div class="password-container">
-                        <input type="password" id="confirm-password" name="confirm-password" required>
+                        <input type="password" id="confirm-password" name="confirm-password" required style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
                     </div>
                     <!-- Profile Image Upload -->
-                    <label for="profile-image">Profile Image:</label>
-                    <input type="file" id="profile-image" name="profile-image" accept="image/*">
-                    <button type="submit">Submit</button>
+                    <label for="profile-image" style="font-size: 16px;">Profile Image:</label>
+                    <input type="file" id="profile-image" name="profile-image" accept="image/*" style="font-size: 16px;">
+                    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Submit</button>
                 </form>
             </div>
         </div>
