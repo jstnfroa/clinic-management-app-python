@@ -113,8 +113,120 @@ def staff_dashboard(request):
     # Get staff details
     staff_id = request.session['staff_id']
     staff = models.Staff.objects.get(staff_id=staff_id)
+
+    # Patients data
+    patients = models.Patient.objects.all()
+    total_patients = patients.count()
+
+    # Count patients per college/office and get abbreviations
+    college_patient_count = patients.values('college_office').annotate(patient_count=Count('college_office'))
+
+    # Prepare the data for the chart with abbreviations
+    college_offices = [item['college_office'] for item in college_patient_count]
+    abbreviated_offices = [COLLEGE_ABBREVIATIONS.get(office, office) for office in college_offices]  # Use abbreviation or full name
+    patient_counts = [item['patient_count'] for item in college_patient_count]
+
+    age_ranges = {
+        '0-17': 0,
+        '18-25': 0,
+        '26-40': 0,
+        '41-60': 0,
+        '60+': 0,
+    }
+    for patient in patients:
+        if patient.age <= 17:
+            age_ranges['0-17'] += 1
+        elif 18 <= patient.age <= 25:
+            age_ranges['18-25'] += 1
+        elif 26 <= patient.age <= 40:
+            age_ranges['26-40'] += 1
+        elif 41 <= patient.age <= 60:
+            age_ranges['41-60'] += 1
+        else:
+            age_ranges['60+'] += 1
+
+    age_percentages = {k: (v / total_patients * 100) if total_patients else 0 for k, v in age_ranges.items()}
+
+    # Active/Inactive Patients
+    active_patients = patients.filter(is_logged_in=True).count()
+    inactive_patients = total_patients - active_patients
+
+    # Appointments data
+    today = timezone.now().date()
+    appointments_today = models.Appointment.objects.filter(date=today)
+    total_appointments_today = appointments_today.count()
+    scheduled_appointments = appointments_today.filter(status='Scheduled').count()
+    completed_appointments = appointments_today.filter(status='Completed').count()
+    canceled_appointments = appointments_today.filter(status='Canceled').count()
+
+    start_of_week = today - timedelta(days=today.weekday())  # Start of the week (Monday)
     
-    return render(request, 'staffside/staffdashboard.html', {'staff': staff})
+    # Initialize a dictionary for consultations count per day
+    daily_consultations = {day: 0 for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']}
+
+    # Get consultations for the current week
+    consultations = models.Appointment.objects.filter(
+        date__range=[start_of_week, start_of_week + timedelta(days=4)]
+    ).values('date').annotate(count=Count('appointment_id'))
+
+    # Map the data to days of the week
+    daily_consultations = {day: 0 for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]}
+    for consultation in consultations:
+        day_name = consultation['date'].strftime('%A')
+        if day_name in daily_consultations:
+            daily_consultations[day_name] = consultation['count']
+
+    # Convert data into JSON for safe passing to JavaScript
+    daily_consultations_json = json.dumps(list(daily_consultations.values()))
+
+    # Staff data
+    active_staff = models.Staff.objects.filter(status='Active')
+    active_nurses = active_staff.filter(role='Nurse').count()
+    active_dentists = active_staff.filter(role='Dentist').count()
+    active_physicians = active_staff.filter(role='Physician').count()
+
+    # Patient roles
+    active_students = patients.filter(is_logged_in=True, patient_role='Student').count()
+    active_faculty = patients.filter(is_logged_in=True, patient_role='Faculty').count()
+    active_non_academic = patients.filter(is_logged_in=True, patient_role='Non-Academic Personnel').count()
+
+    # Queue statuses
+    queue_status_today = models.Appointment.objects.filter(date=today)
+    patients_serving = queue_status_today.filter(queue_status='In Progress').count()
+    patients_served = queue_status_today.filter(queue_status='Completed').count()
+    patients_waiting = queue_status_today.filter(queue_status='Waiting').count()
+
+    # Context
+    context = {
+        'staff': staff,
+        'total_patients': total_patients,
+        'active_patients': active_patients,
+        'inactive_patients': inactive_patients,
+        'total_appointments_today': total_appointments_today,
+        'scheduled_appointments': scheduled_appointments,
+        'completed_appointments': completed_appointments,
+        'canceled_appointments': canceled_appointments,
+        'active_nurses': active_nurses,
+        'active_dentists': active_dentists,
+        'active_physicians': active_physicians,
+        'active_students': active_students,
+        'active_faculty': active_faculty,
+        'active_non_academic': active_non_academic,
+        'patients_serving': patients_serving,
+        'patients_served': patients_served,
+        'patients_waiting': patients_waiting,
+        'age_0_17': age_percentages['0-17'],
+        'age_18_25': age_percentages['18-25'],
+        'age_26_40': age_percentages['26-40'],
+        'age_41_60': age_percentages['41-60'],
+        'age_60_plus': age_percentages['60+'],
+        'daily_consultations': daily_consultations_json,
+        'college_offices': abbreviated_offices,
+        'patient_counts': patient_counts,
+    }
+
+    return render(request, 'staffside/staffdashboard.html', context)
+
 
 @staff_login_required
 def staff_queuing(request):
@@ -170,19 +282,28 @@ def admin_login(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Authenticate admin
         try:
             admin = models.Admin.objects.get(email=email)
             if check_password(password, admin.password):  # Verifying the hashed password
-                # Store session data for admin
+                # Store session data
                 request.session['admin_id'] = admin.admin_id
-                request.session['admin_email'] = admin.email  # Storing email as 'admin_name'
-                return redirect('admin_dashboard')  # Redirect to admin dashboard after successful login
+                request.session['admin_email'] = admin.email
+                return JsonResponse({
+                    'success': True,
+                    'redirect_url': '/admin_dashboard/',  # Replace with actual dashboard URL
+                })
             else:
-                messages.error(request, 'Invalid email or password')  # Error message
+                return JsonResponse({
+                    'success': False,
+                    'error_message': 'Invalid email or password',
+                })
         except models.Admin.DoesNotExist:
-            messages.error(request, 'Admin does not exist')  # Error message
-
+            return JsonResponse({
+                'success': False,
+                'error_message': 'Admin does not exist',
+            })
+    
+    # If GET request or form not submitted, return the login page
     return render(request, 'auth/admin_login.html')
 
 # Define abbreviations for the colleges/departments
@@ -500,6 +621,7 @@ def view_staff(request, staff_id):
         'role': staff.role,
         'email_address': staff.email_address,
         'contact_number': staff.contact_number,
+        'status': staff.status,
         'profile_image': staff.profile_image.url if staff.profile_image else None
     }
     return JsonResponse({'staff': staff_data})
@@ -513,20 +635,17 @@ def edit_staff(request, staff_id):
         staff.role = request.POST.get('role')
         staff.email_address = request.POST.get('email_address')
         staff.contact_number = request.POST.get('contact_number')
-        
-        # Update the status of the staff member
         staff.status = request.POST.get('status')
-
+        
         # Optionally handle profile image and password updates
         if 'profile_image' in request.FILES:
             staff.profile_image = request.FILES['profile_image']
         
         staff.save()  # Save the updated staff details
 
-        # Return a JSON response indicating success
         return JsonResponse({'success': True, 'message': 'Staff updated successfully'})
 
-    return render(request, 'superadminside/edit_staff.html', {'staff': staff})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 # Delete staff member
 def delete_staff(request, staff_id):

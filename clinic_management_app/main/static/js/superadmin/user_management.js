@@ -1,88 +1,77 @@
-// Open Add Staff Modal
-document.getElementById("openModalBtn").addEventListener("click", function() {
-    document.getElementById("staffModal").style.display = "flex"; // Open the add staff modal
-});
-
-// Close Modal Function
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = "none"; // Close modal by ID
-}
-
-// Close staff modal when clicking the close button
-document.getElementById("closeModalBtn").addEventListener("click", function() {
-    closeModal('staffModal'); // Close the add staff modal
-});
-
-// For Edit and View modals, ensure the respective modals are handled correctly
-function viewStaff(staffId) {
-    // Add the logic to populate staff details dynamically and show the modal
-    document.getElementById("viewStaffModal").style.display = "flex";
-}
-
-function editStaff(staffId) {
-    // Populate the form fields for editing the staff and show the edit modal
-    document.getElementById("editStaffModal").style.display = "flex";
-}
-
-// Close edit staff modal
-document.querySelector(".close-btn").addEventListener("click", function() {
-    closeModal('editStaffModal'); // Close edit staff modal
-});
-
-
-// Handle form submission for adding staff
-addStaffForm.addEventListener('submit', function(e) {
-    e.preventDefault();  // Prevent default form submission
-
-    const formData = new FormData(addStaffForm);
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    fetch(userManagementUrl, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrfToken
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: data.message,
-            });
-            modal.style.display = 'none';  // Close the modal after success
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: data.error,
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: 'An error occurred. Please try again.',
-        });
-    });
-});
-
 // Function to open a modal by ID
 function openModalById(modalId) {
-    document.getElementById(modalId).style.display = 'block';  // Open the specified modal
+    document.getElementById(modalId).style.display = 'flex'; // Open the specified modal
 }
 
-// Function to close any modal
+// Function to close a modal by ID
 function closeModalById(modalId) {
-    document.getElementById(modalId).style.display = 'none';  // Close the specified modal
+    document.getElementById(modalId).style.display = 'none'; // Close the specified modal
 }
 
-// Function to view staff details
+// Handle form submission for adding staff via AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    // Open Add Staff Modal
+    const openModalBtn = document.getElementById("openModalBtn");
+    const staffModal = document.getElementById("staffModal");
+    
+    if (openModalBtn && staffModal) {
+        openModalBtn.addEventListener("click", function() {
+            staffModal.style.display = "flex"; // Open the add staff modal
+        });
+    }
+
+    // Close Modal Function
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = "none"; // Close modal by ID
+        }
+    }
+
+    // Close staff modal when clicking the close button
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", function() {
+            closeModal('staffModal'); // Close the add staff modal
+        });
+    }
+
+    // Handle form submission for adding staff via AJAX
+    const addStaffForm = document.getElementById("addStaffForm");
+    if (addStaffForm) {
+        addStaffForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Gather form data
+            const formData = new FormData(addStaffForm);
+
+            // Send the form data to the server via AJAX
+            fetch("{% url 'user_management' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // Success message
+                    closeModal('staffModal'); // Close the modal after success
+                    // Optionally, refresh the staff list or append the new staff to the table
+                } else if (data.error) {
+                    alert(data.error); // Show error message
+                }
+            })
+            .catch(error => {
+                alert("An error occurred. Please try again.");
+                console.error(error);
+            });
+        });
+    }
+});
+
+// View Staff Details
 function viewStaff(staffId) {
     if (staffId) {
         openModalById("viewStaffModal");
@@ -97,6 +86,7 @@ function viewStaff(staffId) {
                         <p><strong>Role:</strong> ${staff.role}</p>
                         <p><strong>Email:</strong> ${staff.email_address}</p>
                         <p><strong>Contact Number:</strong> ${staff.contact_number}</p>
+                        <p><strong>Status:</strong> ${staff.status}</p>
                         <p><strong>Profile Image:</strong></p>
                         <img src="${staff.profile_image || 'https://via.placeholder.com/40'}" alt="${staff.name}" width="40" height="40" style="border-radius: 50%; margin-top: 10px;">
                     `;
@@ -126,7 +116,7 @@ function viewStaff(staffId) {
     }
 }
 
-// Function to edit staff details
+// Edit Staff Details
 function editStaff(staffId) {
     openModalById('editStaffModal');
 
@@ -140,7 +130,6 @@ function editStaff(staffId) {
                 document.getElementById('role').value = staff.role;
                 document.getElementById('email_address').value = staff.email_address;
                 document.getElementById('contact_number').value = staff.contact_number;
-                // Set the status field in the modal
                 document.getElementById('status').value = staff.status;  // Update status field
             }
         })
@@ -149,107 +138,50 @@ function editStaff(staffId) {
         });
 }
 
-// Handle form submission for editing staff details
-document.getElementById('editStaffForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the form and staffId exist before attaching the event listener
+    const editStaffForm = document.getElementById('editStaffForm');
+    const staffIdField = document.getElementById('staffId'); // Make sure this field exists in the DOM
+    
+    if (editStaffForm && staffIdField) {
+        editStaffForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
 
-    const formData = new FormData(this);
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const formData = new FormData(editStaffForm); // Get the form data
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
 
-    fetch('/staff/edit/' + document.getElementById('staffId').value + '/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrfToken
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Success alert with SweetAlert2
-            Swal.fire(
-                'Success!',
-                'Staff updated successfully!',
-                'success'
-            ).then(() => {
-                // Reload the page only after the alert is closed
-                location.reload();
-            });
-        } else {
-            // Error alert with SweetAlert2
-            Swal.fire(
-                'Error!',
-                'Error: ' + data.error,
-                'error'
-            );
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        // Error alert with SweetAlert2
-        Swal.fire(
-            'Error!',
-            'An error occurred. Please try again.',
-            'error'
-        );
-    });
-});
+            const staffId = staffIdField.value; // Get the staff ID from the hidden input field
+            if (!staffId) {
+                console.error("Staff ID is missing.");
+                return;
+            }
 
-
-function deleteStaff(staffId) {
-    // Show a confirmation dialog using SweetAlert2
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'This staff member will be deleted permanently.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Log the CSRF token for debugging
-            console.log('CSRF Token:', getCookie('csrftoken'));
-
-            // Make an AJAX request to delete the staff
-            fetch(`/delete_staff/${staffId}/`, {
+            // Make the fetch request to update staff
+            fetch(`/staff/edit/${staffId}/`, {
                 method: 'POST',
+                body: formData,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')  // Ensure the CSRF token is included
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken // Include the CSRF token for security
                 },
-                body: JSON.stringify({})  // Empty body as no data is needed
             })
-            .then(response => {
-                console.log('Response:', response);  // Log the whole response object
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();  // Parse the JSON response
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Data:', data);  // Log the response data
-                if (data.status === 'success') {
+                if (data.success) {
                     // Success alert with SweetAlert2
                     Swal.fire(
-                        'Deleted!',
-                        'Staff member deleted successfully.',
+                        'Success!',
+                        'Staff updated successfully!',
                         'success'
-                    );
-
-                    // Check if the staff row exists before removing it
-                    const staffRow = document.getElementById(`staff-row-${staffId}`);
-                    console.log('Staff Row:', staffRow);  // Check if the element exists
-                    if (staffRow) {
-                        staffRow.remove();  // Only remove if it exists
-                    } else {
-                        console.error(`Staff row with ID staff-row-${staffId} not found`);
-                    }
+                    ).then(() => {
+                        // Reload the page only after the alert is closed
+                        location.reload();
+                    });
                 } else {
                     // Error alert with SweetAlert2
                     Swal.fire(
                         'Error!',
-                        data.message || 'Failed to delete staff member.',
+                        'Error: ' + data.error,
                         'error'
                     );
                 }
@@ -259,26 +191,61 @@ function deleteStaff(staffId) {
                 // Error alert with SweetAlert2
                 Swal.fire(
                     'Error!',
-                    'An error occurred while trying to delete the staff member.',
+                    'An error occurred. Please try again.',
+                    'error'
+                );
+            });
+        });
+    } else {
+        console.error("editStaffForm or staffId field is missing.");
+    }
+});
+
+
+// Function to delete staff
+function deleteStaff(staffId) {
+    // Show a confirmation dialog using SweetAlert2
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This staff member will be deleted permanently.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/staff/delete/' + staffId + '/', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Staff member has been deleted.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to delete staff member.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while deleting staff member.',
                     'error'
                 );
             });
         }
     });
-}
-
-// Utility function to get the CSRF token from cookies
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
 }

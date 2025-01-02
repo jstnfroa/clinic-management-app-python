@@ -123,17 +123,21 @@ class Staff(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if not is_password_usable(self.password):
-            self.password = make_password(self.password)
+        # Ensure password is hashed before saving
+        if not self.pk or not self.password.startswith('pbkdf2_sha256$'):  # Check if password is not already hashed
+            self.password = make_password(self.password)  # Hash the password
         super(Staff, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
 
+    # Custom method to check password
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+
     class Meta:
         verbose_name = "Staff Member"
         verbose_name_plural = "Staff Members"
-
 
 #Admin Model
 class Admin(models.Model):
@@ -147,13 +151,13 @@ class Admin(models.Model):
 
     def save(self, *args, **kwargs):
         # Hash the password only if it's not already hashed
-        if self.password and not is_password_usable(self.password):
+        if self.password and not self.password.startswith('pbkdf2_sha256$'):  # Check if password is already hashed
             self.password = make_password(self.password)
         super(Admin, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.email
-
+    
 #Appointment Model
 class Appointment(models.Model):
     appointment_id = models.AutoField(primary_key=True, verbose_name="Appointment ID") #Auto created
