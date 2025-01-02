@@ -41,10 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addStaffForm) {
         addStaffForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent the default form submission
-
+        
             // Gather form data
             const formData = new FormData(addStaffForm);
-
+        
             // Send the form data to the server via AJAX
             fetch("{% url 'user_management' %}", {
                 method: "POST",
@@ -53,8 +53,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-Requested-With': 'XMLHttpRequest',
                 },
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if the response is valid
+                if (!response.ok) {
+                    throw new Error('Failed to add staff.');
+                }
+                return response.json(); // Parse the JSON response
+            })
             .then(data => {
+                console.log("Response data:", data);  // Log response data to see if it matches what you expect
                 if (data.message) {
                     alert(data.message); // Success message
                     closeModal('staffModal'); // Close the modal after success
